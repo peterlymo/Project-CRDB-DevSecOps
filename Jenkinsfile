@@ -34,15 +34,31 @@ pipeline {
             }
         }
 
-           stage('SonarQube Test- SAST') {
-            steps {
-                    sh " mvn clean verify sonar:sonar \
-                      -Dsonar.projectKey=devsecops-check \
-                      -Dsonar.projectName='devsecops-check' \
-                      -Dsonar.host.url=http://node1:9000 \
-                      -Dsonar.token=sqp_f4267c4125e62a52487d047dd5f5280f72256876"           
-            }
+        //    stage('SonarQube Test- SAST') {
+        //     steps {
+        //             sh " mvn clean verify sonar:sonar \
+        //               -Dsonar.projectKey=devsecops-check \
+        //               -Dsonar.projectName='devsecops-check' \
+        //               -Dsonar.host.url=http://node1:9000 \
+        //               -Dsonar.token=sqp_f4267c4125e62a52487d047dd5f5280f72256876"           
+        //     }
+        // }
+
+
+            stage('SonarQube - SAST') {
+      steps {
+       withSonarQubeEnv('SonarQube') {
+          sh "mvn sonar:sonar \
+                               -Dsonar.projectKey=devsecops-check \
+                               -Dsonar.host.url=http://node1:9000"
         }
+        timeout(time: 2, unit: 'MINUTES') {
+          script {
+            waitForQualityGate abortPipeline: true
+          }
+         }
+       }
+    }
 
 
         
