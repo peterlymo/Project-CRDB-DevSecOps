@@ -33,6 +33,19 @@ pipeline {
               }
             }
         }
+
+           stage('SonarQube Test- SAST') {
+            steps {
+                    sh " mvn clean verify sonar:sonar \
+                      -Dsonar.projectKey=devsecops-check \
+                      -Dsonar.projectName='devsecops-check' \
+                      -Dsonar.host.url=http://node1:9000 \
+                      -Dsonar.token=sqp_f4267c4125e62a52487d047dd5f5280f72256876"           
+            }
+        }
+
+
+        
            stage('Docker Build and Push') {
             steps {
               withDockerRegistry([credentialsId: "github_account", url: "https://ghcr.io/"]) {
