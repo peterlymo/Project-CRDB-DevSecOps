@@ -47,6 +47,25 @@ pipeline {
          }
        }
      }
+
+        stage('Vulnerability Scan - Docker') {
+            steps {
+                parallel(
+                    "Dependency Scan": {
+                        sh "mvn dependency-check:check"
+                    },
+                    "Trivy Scan":{
+                        sh "bash trivy-docker-image-scan.sh"
+                    }
+                 )
+              }
+                post {
+                   always {
+                      dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+                }
+             }
+          }
+          
            stage('Docker Build and Push') {
             steps {
               withDockerRegistry([credentialsId: "docker-hub", url: "https://quay.io/"]) {
