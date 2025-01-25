@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    environment {
+        serviceName = "devsecops-svc"
+        applicationURL="http://172.25.230.193"
+        applicationURI="increment/99"
+    }
+
+
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "maven_new"
@@ -65,7 +72,7 @@ pipeline {
                 }
              }
           }
-          
+
            stage('Docker Build and Push') {
             steps {
               withDockerRegistry([credentialsId: "docker-hub", url: "https://quay.io/"]) {
@@ -82,6 +89,24 @@ pipeline {
                  sh "kubectl apply -f k8s_deployment_service.yaml"
              }
           }
-      }   
+      } 
+
+       stage('Integration Tests - DEV') {
+            steps {
+              script {
+                 try {
+                   withKubeConfig([credentialsId: 'kubeconfig']) {
+                   sh "bash integration-test.sh"
+                  }
+             } catch (e) {
+             withKubeConfig([credentialsId: 'kubeconfig']) {
+               sh "kubectl -n default rollout undo deploy ${deploymentName}"
+             }
+             throw e
+             }
+          }
+       }
+     }   
    }
 }
+
