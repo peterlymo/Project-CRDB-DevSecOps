@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    environment {
+        serviceName = "devsecops-svc"
+        applicationURL="http://10.96.241.70"
+        applicationURI="increment/99"
+    }
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "maven_new"
