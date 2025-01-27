@@ -42,7 +42,7 @@ REPORT_FILE="zap_report.html"
 # Start the OWASP ZAP container if not already running
 if ! docker ps | grep -q owasp; then
   echo "Starting OWASP ZAP container..."
-  docker run -dt --name docker.io/owasp zaproxy/zap2docker-stable /bin/bash
+  docker run -dt --name docker.io/owasp zaproxy/zap-stable /bin/bash
 fi
 
 # Ensure the report directory exists
