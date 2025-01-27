@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         serviceName = "devsecops-svc"
-        applicationURL="http://master"
+        applicationURL="http://172.25.230.122"
         applicationURI="increment/99"
     }
     tools {
